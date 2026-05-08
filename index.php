@@ -73,6 +73,7 @@ if (!isset($_SESSION['user_id'])) {
                         <p id="lieuEvent"><strong>Lieu</strong> : Tomsk</p>
                         <p id="accesEvent"><span id="acces">Publique</span></p>
                     </figcaption>
+                    
                     <nav id="actionsEvent">
                         <p id="dateEvent">24/04/2026</p>
 
