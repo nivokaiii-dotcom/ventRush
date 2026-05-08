@@ -163,6 +163,77 @@ main {
     border: none !important;
 }
 
+/* ── Event form ── */
+.event-form {
+    width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.event-form textarea {
+    padding: 9px 11px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    outline: none;
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.15s;
+}
+
+.event-form textarea:focus {
+    border-color: #000;
+}
+
+.event-form select {
+    padding: 9px 11px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    outline: none;
+    background-color: #fff;
+    width: 100%;
+    transition: border-color 0.15s;
+}
+
+.event-form select:focus {
+    border-color: #000;
+}
+
+.event-form input[type="file"] {
+    padding: 6px 0;
+    border: none;
+    font-size: 13px;
+}
+
+.event-form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+.btn-secondary {
+    padding: 10px 20px;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.15s;
+}
+
+.btn-secondary:hover {
+    background-color: #f3f4f6;
+}
+
+.required {
+    color: #b91c1c;
+}
+
 /* ── Auth pages ── */
 .auth-wrapper {
     min-height: 100vh;

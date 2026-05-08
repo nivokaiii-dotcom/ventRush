@@ -21,6 +21,7 @@ if (!isset($_SESSION['user_id'])) {
         <nav>
             <ul>
                 <li><a href="index.php">Accueil</a></li>
+                <li><a href="create-event.php">Créer un événement</a></li>
                 <li><a href="account.php">Compte</a></li>
                 <li><a href="about.php">À propos</a></li>
                 <li><a href="logout.php">Déconnexion</a></li>
