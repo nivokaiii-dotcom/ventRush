@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(wsl -d Ubuntu-24.04 bash -c \"cd /var/www/html/ventRush-main && git init && git config user.name 'Marwan' && git config user.email 'marwan.alvsd@eduge.ch'\")",
+      "PowerShell(wsl -d Ubuntu-24.04 bash -c \"cd /var/www/html/ventRush-main && git branch -m main && git add . && git status\")",
+      "PowerShell(wsl -d Ubuntu-24.04 bash -c \"cd /var/www/html/ventRush-main && git rm --cached .claude/settings.local.json && git rm --cached README.md 2>/dev/null; echo done\")",
+      "PowerShell(wsl -d Ubuntu-24.04 bash -c \"cd /var/www/html/ventRush-main && git rm --cached -f .claude/settings.local.json && git status\")",
+      "PowerShell(wsl -d Ubuntu-24.04 bash -c \"cd /var/www/html/ventRush-main && git remote add origin 'https://nivokaiii-dotcom:UHQ-Kharpta-1312@github.com/nivokaiii-dotcom/ventRush.git' && git push -u origin main 2>&1\")"
+    ]
+  }
+}
