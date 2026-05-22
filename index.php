@@ -4,6 +4,44 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
+
+require_once __DIR__ . '/config/db.php';
+
+$pdo = getPDO();
+$user_id = $_SESSION['user_id'];
+
+$stmt = $pdo->prepare(
+    'SELECT v.*, COALESCE(v.participants_count, 0) AS participants_count, COALESCE(v.average_rating, 0) AS average_rating
+     FROM view_events_summary v
+     WHERE v.organizer_id = ?
+     ORDER BY v.start_at DESC'
+);
+$stmt->execute([$user_id]);
+$organised_events = $stmt->fetchAll();
+
+$stmt2 = $pdo->prepare(
+    'SELECT v.*, ep.status AS participation_status, COALESCE(v.participants_count, 0) AS participants_count, COALESCE(v.average_rating, 0) AS average_rating
+     FROM view_events_summary v
+     INNER JOIN event_participants ep ON ep.event_id = v.id AND ep.user_id = ?
+     WHERE v.organizer_id != ? AND ep.status = \'accepted\'
+     ORDER BY v.start_at DESC'
+);
+$stmt2->execute([$user_id, $user_id]);
+$registered_events = $stmt2->fetchAll();
+
+function renderStars(float $rating): string {
+    $html = '<div class="noteEvent">';
+    for ($i = 1; $i <= 5; $i++) {
+        $color = $i <= round($rating) ? '#facc15' : '#ccc';
+        $html .= '<span class="star" style="color: ' . $color . ';">★</span>';
+    }
+    $html .= '</div>';
+    return $html;
+}
+
+function formatDate(string $datetime): string {
+    return date('d/m/Y', strtotime($datetime));
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -34,108 +72,68 @@ if (!isset($_SESSION['user_id'])) {
             <br>
             <h3>Evénements organisés par vous</h3><br>
             <section class="organise">
-                <figure id="event">
-                    <img id="miniatureEvent" src="./images/fraise.jpg">
-                    <figcaption id="informationsEvent">
-                        <p id="nomEvent"><strong>Nom</strong> : Exemple</p>
-                        <p id="nombreParticipantsEvent"><strong>Participants</strong> : 25/68</p>
-                        <p id="lieuEvent"><strong>Lieu</strong> : Tomsk</p>
-                        <p id="accesEvent"><span id="acces">Publique</span></p>
-                    </figcaption>
+                <?php if (empty($organised_events)): ?>
+                    <p>Vous n'avez pas encore créé d'événement.</p>
+                <?php else: ?>
+                    <?php foreach ($organised_events as $event): ?>
+                        <figure id="event">
+                            <img id="miniatureEvent" src="<?= $event['thumbnail'] ? htmlspecialchars($event['thumbnail']) : './images/fraise.jpg' ?>">
+                            <figcaption id="informationsEvent">
+                                <p id="nomEvent"><strong>Nom</strong> : <?= htmlspecialchars($event['title']) ?></p>
+                                <p id="nombreParticipantsEvent"><strong>Participants</strong> : <?= (int)$event['participants_count'] ?>/<?= (int)$event['capacity'] ?></p>
+                                <p id="lieuEvent"><strong>Lieu</strong> : <?= htmlspecialchars($event['location']) ?></p>
+                                <p id="accesEvent"><span id="acces"><?= $event['is_public'] ? 'Publique' : 'Privé' ?></span></p>
+                            </figcaption>
 
-                    <nav id="actionsEvent">
-                        <p id="dateEvent">24/04/2026</p>
+                            <nav id="actionsEvent">
+                                <p id="dateEvent"><?= formatDate($event['start_at']) ?></p>
 
-                        <!-- mettre les étoiles ici -->
-                        <div class="noteEvent">
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                        </div>
+                                <?= renderStars((float)$event['average_rating']) ?>
 
-                        <div id="buttonModifierEvent" onclick="window.location.href='index.html'">
-                            <span>Modifier</span>
-                        </div>
+                                <div id="buttonModifierEvent" onclick="window.location.href='edit-event.php?id=<?= (int)$event['id'] ?>'">
+                                    <span>Modifier</span>
+                                </div>
 
-                        <div id="buttonSupprimerEvent" onclick="window.location.href='index.html'">
-                            <span>Supprimer</span>
-                        </div>
-                    </nav>
-                </figure>
-
-                <figure id="event">
-                    <img id="miniatureEvent" src="./images/fraise.jpg">
-                    <figcaption id="informationsEvent">
-                        <p id="nomEvent"><strong>Nom</strong> : Exemple</p>
-                        <p id="nombreParticipantsEvent"><strong>Participants</strong> : 25/68</p>
-                        <p id="lieuEvent"><strong>Lieu</strong> : Tomsk</p>
-                        <p id="accesEvent"><span id="acces">Publique</span></p>
-                    </figcaption>
-                    
-                    <nav id="actionsEvent">
-                        <p id="dateEvent">24/04/2026</p>
-
-                        <!-- mettre les étoiles ici -->
-                        <div class="noteEvent">
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                        </div>
-
-                        <div id="buttonModifierEvent" onclick="window.location.href='index.html'">
-                            <span>Modifier</span>
-                        </div>
-
-                        <div id="buttonSupprimerEvent" onclick="window.location.href='index.html'">
-                            <span>Supprimer</span>
-                        </div>
-                    </nav>
-                </figure>
-
-
+                                <div id="buttonSupprimerEvent" onclick="window.location.href='delete-event.php?id=<?= (int)$event['id'] ?>'">
+                                    <span>Supprimer</span>
+                                </div>
+                            </nav>
+                        </figure>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </section>
             <br><br>
             <h3>Evénements inscrits</h3><br>
             <section class="inscrits">
-                <figure id="event">
-                    <img id="miniatureEvent" src="./images/fraise.jpg">
-                    <figcaption id="informationsEvent">
-                        <p id="nomEvent"><strong>Nom</strong> : Exemple</p>
-                        <p id="nombreParticipantsEvent"><strong>Participants</strong> : 25/68</p>
-                        <p id="lieuEvent"><strong>Lieu</strong> : Tomsk</p>
-                        <p id="accesEvent"><span id="acces">Publique</span></p>
-                    </figcaption>
+                <?php if (empty($registered_events)): ?>
+                    <p>Vous n'êtes inscrit à aucun événement.</p>
+                <?php else: ?>
+                    <?php foreach ($registered_events as $event): ?>
+                        <figure id="event">
+                            <img id="miniatureEvent" src="<?= $event['thumbnail'] ? htmlspecialchars($event['thumbnail']) : './images/fraise.jpg' ?>">
+                            <figcaption id="informationsEvent">
+                                <p id="nomEvent"><strong>Nom</strong> : <?= htmlspecialchars($event['title']) ?></p>
+                                <p id="nombreParticipantsEvent"><strong>Participants</strong> : <?= (int)$event['participants_count'] ?>/<?= (int)$event['capacity'] ?></p>
+                                <p id="lieuEvent"><strong>Lieu</strong> : <?= htmlspecialchars($event['location']) ?></p>
+                                <p id="accesEvent"><span id="acces"><?= $event['is_public'] ? 'Publique' : 'Privé' ?></span></p>
+                            </figcaption>
 
-                    <nav id="actionsEvent">
+                            <nav id="actionsEvent">
+                                <p id="dateEvent"><?= formatDate($event['start_at']) ?></p>
 
-                        <p id="dateEvent">24/04/2026</p>
-                        <div class="noteEvent">
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                            <span class="star" data-rating="1" style="color: #facc15;">★</span>
-                        </div>
-                        <!-- mettre les étoiles ici -->
+                                <?= renderStars((float)$event['average_rating']) ?>
 
-                        <!-- <div id="buttonParticiperEvent" onclick="window.location.href='index.html'">
-                            <span>Participer</span>
-                        </div> -->
+                                <div id="buttonDetaisEvent" onclick="window.location.href='event.php?id=<?= (int)$event['id'] ?>'">
+                                    <span>Détails</span>
+                                </div>
 
-                        <div id="buttonDetaisEvent" onclick="window.location.href='index.html'">
-                            <span>Détails</span>
-                        </div>
-
-                        <div id="buttonQuitterEvent" onclick="window.location.href='index.html'">
-                            <span>Quitter</span>
-                        </div>
-
-                    </nav>
-                </figure>
+                                <div id="buttonQuitterEvent" onclick="window.location.href='leave-event.php?id=<?= (int)$event['id'] ?>'">
+                                    <span>Quitter</span>
+                                </div>
+                            </nav>
+                        </figure>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </section>
         </div>
     </main>
