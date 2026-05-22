@@ -374,3 +374,78 @@ footer {
     height: 45px;
     background-color: black;
 }
+
+/* ── Events page ── */
+.main-content-wide {
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.events-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 9px 11px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    outline: none;
+    background-color: #fff;
+    min-width: 180px;
+    transition: border-color 0.15s;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    border-color: #000;
+}
+
+.btn-filter {
+    padding: 9px 20px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.btn-filter:hover {
+    background-color: #222;
+}
+
+.btn-reset {
+    padding: 9px 20px;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.15s;
+}
+
+.btn-reset:hover {
+    background-color: #f3f4f6;
+}
+
+.events-count {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.events-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 17px;
+}
