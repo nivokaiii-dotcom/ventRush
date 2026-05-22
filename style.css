@@ -65,18 +65,25 @@ main {
     border: 1px solid #c2c2c9;
     width: 400px;
     overflow: hidden;
+    height: 360px;
 }
 
 #miniatureEvent {
     border-bottom: 1px solid #c2c2c9;
     width: 400px;
+    height: 220px;
+    min-height: 220px;
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 #informationsEvent {
     display: flex;
     justify-content: space-around;
     padding: 5px;
+    min-height: 60px;
+    align-items: flex-start;
+    flex-shrink: 0;
 }
 
 #acces {
@@ -87,11 +94,11 @@ main {
 #actionsEvent {
     display: flex;
     gap: 10px;
-    justify-content: flex-end;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     padding: 15px;
+    margin-top: auto;
 }
 
 #actionsEvent div {
@@ -151,10 +158,15 @@ main {
 
 #dateEvent {
     margin-right: auto;
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
 .organise {
+    display: flex;
+    gap: 17px;
+}
+
+.inscrits {
     display: flex;
     gap: 17px;
 }
